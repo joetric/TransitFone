@@ -126,16 +126,26 @@ height: 4em;
 		<div class="content"><a href="/"><img src="/img/transitfone_h46_bg0cf.gif" alt="transitfone" width="216" height="46" border="0" /></a></div>
 	</div>
 	<div class="container">
-		
 		<div class="content">
 			<img src="/img/transitfone_ss_galaxy_cropped.jpg" style="float:right;margin-left:50px;"/>
-			<h1>SEPTA bus detour alerts via text</h1>
-			<p><span class="accent-color">Subscribe</span> by texting the letter <strong>s</strong> and the <strong>bus route number(s)</strong> to <span class="accent-color">215-310-5550</span>. Put a space after the letter 's' and between the route numbers, like this:</p>
-			<span class="sms indent30">s 23 H XH </span>
-			<p>To <span class="accent-color">unsubscribe</span> from one or more routes, text the letter <strong>u</strong> and the <strong>bus route number(s)</strong>. For example, to unsubscribe from alerts for Route 23, type:</p>
-			<p><span class="sms indent30">u 23 </span></p>
-			<p>To <span class="accent-color">unsubscribe from all alerts</span>, text:</p>
-			<span class="sms indent30">u all</span>
+            <div>
+              <h1>SEPTA bus detour alerts via text</h1>
+              <p><span class="accent-color">Subscribe</span> by texting the letter <strong>s</strong> and the <strong>bus route number(s)</strong> to <span class="accent-color">215-310-5550</span>. Put a space after the letter 's' and between the route numbers, like this:</p>
+              <span class="sms indent30">s 23 H XH </span>
+              <p>To <span class="accent-color">unsubscribe</span> from one or more routes, text the letter <strong>u</strong> and the <strong>bus route number(s)</strong>. For example, to unsubscribe from alerts for Route 23, type:</p>
+              <p><span class="sms indent30">u 23 </span></p>
+              <p>To <span class="accent-color">unsubscribe from all alerts</span>, text:</p>
+              <span class="sms indent30">u all</span>
+                
+                <div style="width:100%;height:50px;"></div>
+                <h2>SEPTA bus detour history</h2>
+                <form action="" method="get">
+                <p>
+                <input name="route" type="search" placeholder="Enter Route Number"/>
+                <input type="submit" name="submit_route_no" id="submit_route_no" value="Search" />
+                </p>
+                </form>
+            </div>
 		</div>
 	</div>
 	<div class="push"></div>
