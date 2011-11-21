@@ -26,6 +26,7 @@ font-family:Georgia, "Times New Roman", Times, serif;
 font-size:16px;
 }
 p.smaller{
+font-family:Verdana, Arial, Helvetica, sans-serif;
 font-size:10px;
 line-height:140%;
 margin: 0;
@@ -68,9 +69,9 @@ h1{
 margin:0;
 }
 .footer{
-	text-align:center;
-	position: relative;
-	bottom: 0px;
+text-align:center;
+position: relative;
+bottom: 0px;
 }
 .indent30{
 margin-left:30px;
