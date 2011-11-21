@@ -19,4 +19,6 @@ You will need to set up a database, and provide information in application/confi
 As of this 2011-11-20, CodeIgniter supports MySQL (4.1+), MySQLi, MS SQL, Postgres, Oracle, SQLite, and ODBC.
 
 You will also need to use an SMS service. This site was originally developed to use Twilio.
+As of 2011-11-20, you can sign up for an account and get a free $30 credit at Twilio.com.
 
+Obtain an API key and phone number and paste this information into config/twilio.php.
