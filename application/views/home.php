@@ -36,7 +36,7 @@
               <span class="sms indent30">u all</span>
                 
                 <div style="width:100%;height:50px;"></div>
-                <h2>SEPTA bus detour history</h2>
+                <h2>Check detour information here</h2>
                 <form action="" method="get">
                 <p>
                 <input name="route" type="search" placeholder="Enter Route Number"/>
