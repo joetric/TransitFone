@@ -14,7 +14,7 @@ You will need to set up a database, and provide information in application/confi
 - username
 - password
 - database name
-- type of DBMS (mysql, mysqli, mssql, postgres, oracle, sqlite, odbc)
+- type of DBMS (mysql, mysqli, mssql, postgre, oracle, sqlite, odbc)
 
 As of 2011-11-20, CodeIgniter supports MySQL (4.1+), MySQLi, MS SQL, Postgres, Oracle, SQLite, and ODBC.
 
