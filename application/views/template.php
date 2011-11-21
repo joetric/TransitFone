@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Transitfone</title>
+<title><?php $title?$title:'Transitfone';?></title>
 <link rel="stylesheet" href="/css/main.css" type="text/css"/>
 <script type="text/javascript">
   var _gaq = _gaq || [];
