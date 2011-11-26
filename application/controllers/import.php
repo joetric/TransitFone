@@ -1,6 +1,93 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Import extends CI_Controller {
+	private function get_page_contents($url)
+	{
+		$ch = curl_init();
+		curl_setopt ($ch, CURLOPT_URL, $url);
+		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
+		$contents = curl_exec($ch);
+		curl_close($ch);
+		return $contents;
+	}
+	
+	private function get_perk_ids($contents)
+	{
+		preg_match_all("/<a href='.+id=([^']*)'.*>.*View Details.*<\/a>/", $contents, $matches);
+		return $matches[1];		 
+	}
+	
+	public function septa_perks()
+	{
+		$this->load->database();
+		$start_time = time();
+		// get contents of main page
+		$contents = $this->get_page_contents('http://www.septapassperks.org/results.php');
+		preg_match("/(\d+) Perks Found/", $contents, $matches);
+		$pages = ceil($matches[1]/10); //pgs is ceil of num of perks div by 10
+		// page 1 is the same as the main page - get detail links and push to array
+		$perk_ids = $this->get_perk_ids($contents);
+		// get links for the rest of the pages
+		if($pages>1)
+		{
+			for($i=2; $i<=$pages; $i++)
+			{
+				//curl each page to get links
+				$contents = $this->get_page_contents('http://www.septapassperks.org/results.php?page='.$i);
+				$more_perk_ids = $this->get_perk_ids($contents);
+				$perk_ids = array_merge($perk_ids, $more_perk_ids);
+			}
+		}
+		$perks = array();
+		foreach($perk_ids as $perk_id) 
+		{
+			$perk['spp_id'] = $perk_id; // put ID into our array
+			$perk['spp_scrape_ts'] = time();
+			// get contents of detail page
+			$contents = $this->get_page_contents('http://www.septapassperks.org/perkview.php?id='.$perk_id);
+			
+			// get title
+			preg_match('/<div.*bluehead[^>]*>(.+)<\/div>/', $contents, $matches);
+			$perk['spp_title'] = $matches?utf8_encode(trim($matches[1])):'';
+			
+			// get subtitle (business name)
+			preg_match('/<.*orangesubhead[^>]*>(.+)<\/.+>/', $contents, $matches);
+			$perk['spp_org'] = $matches?utf8_encode(trim($matches[1])):'';
+
+			// description
+			preg_match('/Description:.*bodycopy">.*<div style=\'padding-right:10px;\'>(.*)<\/div>.*bodycopybold.*Offer:/s', $contents, $matches);
+			$perk['spp_desc'] = $matches?utf8_encode(trim($matches[1])):'';
+			
+			// offer
+			preg_match('/Offer:.*bodycopy">.*<div style=\'padding-right:10px;\'>(.*)<\/div>.*bodycopybold.*Location:/s', $contents, $matches);	
+			$perk['spp_offer'] = $matches?utf8_encode(trim($matches[1])):'';
+			
+			// location
+			preg_match('/Location:<\/span><span class="bodycopy">(.*)<\/span>/sU', $contents, $matches);
+			$perk['spp_location'] = $matches?utf8_encode(trim($matches[1])):'';
+			
+			// address ( state code + space + ZIP code or ZIP+4 code )
+			preg_match('/.*[A-Z]{2}\s+\d{5}(-\d{4})?/', strip_tags(str_replace('<br>',' ',$perk['spp_location'])), $matches);
+			$perk['spp_address'] = $matches?utf8_encode(trim($matches[0])):'';
+			
+			// geocode address
+			$gc_response = $this->get_page_contents('http://tasks.arcgisonline.com/ArcGIS/rest/services/Locators/TA_Address_NA_10/GeocodeServer/findAddressCandidates?SingleLine='.urlencode($perk['spp_address']).'&f=pjson');
+			$gc_array = json_decode($gc_response);
+			if(count($gc_array->candidates)>0) {
+				$perk['spp_lon'] = $gc_array->candidates[0]->location->x;
+				$perk['spp_lat'] = $gc_array->candidates[0]->location->y;
+				$perk['spp_geocode_service'] = 'ESRI';
+				$perk['spp_geocode_precision'] = (int)$gc_array->candidates[0]->score;
+			}
+			echo 'Added '.$perk['spp_title'].' at '.$perk['spp_org'].'<hr/>';
+			$perks[] = $perk; //add perk to insert array
+		}
+		
+		// add perks to the database 
+		$this->db->insert_batch('septa_pass_perks', $perks);
+		$time = time()-$start_time;
+		echo 'Perks added in ' . $time . ' seconds.';
+	}
 	
 	public function septa_detours()
 	{
@@ -149,7 +236,7 @@ class detour
 	public function verbalize($lang='en'){
 		switch($lang):
 			case 'es':
-				return 'El XHX, que va hacia el sur, se desvía. Solo viajes rapidos. Hacia el sur en manheim, a la izquierda en Wayne, a la derecha en Roberts, a la izquierda en Wissahickon, a la izquierda en Hunting Park, y a la derecha en pulaski, para continuar la ruta normal. El desvia esta en vigor hasta el 23 de agosto, 2012, debido a construccion de puentes.';
+				return 'El HXH, que va hacia el sur, se desvía. Solo viajes rapidos. Hacia el sur en manheim, a la izquierda en Wayne, a la derecha en Roberts, a la izquierda en Wissahickon, a la izquierda en Hunting Park, y a la derecha en pulaski, para continuar la ruta normal. El desvia esta en vigor hasta el 23 de agosto, 2012, debido a construccion de puentes.';
 			default:
 				return 'The southbound HXH is detoured. Express trips only. Southbound via manheim, left on wayne, right on roberts, left on wissahickon, left on hunting park, right on pulaski to continue regular route. Detour is in effect through August 23, 2012 due to Bridge Work.';
 		endswitch;

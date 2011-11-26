@@ -31,7 +31,7 @@
               <p><span class="accent-color">Subscribe</span> by texting the letter <strong>s</strong> and the <strong>bus route number(s)</strong> to <span class="accent-color">215-310-5550</span>. Put a space after the letter 's' and between the route numbers, like this:</p>
               <span class="sms indent30">s 23 H XH </span>
               <p>To <span class="accent-color">unsubscribe</span> from one or more routes, text the letter <strong>u</strong> and the <strong>bus route number(s)</strong>. For example, to unsubscribe from alerts for Route 23, type:</p>
-              <p><span class="sms indent30">u 23 </span></p>
+              <span class="sms indent30">u 23</span>
               <p>To <span class="accent-color">unsubscribe from all alerts</span>, text:</p>
               <span class="sms indent30">u all</span>
                 

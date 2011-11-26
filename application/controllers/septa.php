@@ -1,17 +1,35 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Septa extends CI_Controller {
-
+	public function perks($spp_id=-1)
+	{
+		$this->load->database();
+		if($spp_id>0) {
+			// give full details for one perk
+			$this->db->where('spp_id', $spp_id);
+		} else {
+			// only give id, timestamp, title, business, lat, and long
+			$this->db->select('spp_id, spp_title, spp_org, spp_lat, spp_lon');
+		}
+		$perks = array(
+			#'info' => 'ESRI requires attribution if you are using coordinates. Geocoder metadata is available at http://www.arcgis.com/home/item.html?id=919dd045918c42458f30d2c85d566d68.',
+			'perks' => $this->db->get('septa_pass_perks')->result()
+		);
+		header('Content-type: application/json');
+		echo json_encode($perks);
+	}
+	
 	/* Get latest detours for a given route */
 	public function route($route_short_name, $type='detours')
-	{
+	{	
+		$this->load->database();
 		$format = 'table';
 		if(isset($_GET['format'])) $format=$_GET['format'];
 		
 		switch($type)
 		{
 			case 'detours':
-				$this->load->database();
+				
 				$route_short_name = strtoupper($route_short_name);
 				$this->db->select('route_long_name');
 				$this->db->where('route_short_name', $route_short_name);
