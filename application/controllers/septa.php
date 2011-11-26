@@ -1,30 +1,64 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Septa extends CI_Controller {
+
+	public function perksmap()
+	{
+		$this->load->view('map');
+	}
+	
 	public function perks($spp_id=-1)
 	{
 		$this->load->database();
-		if($spp_id>0) {
+		if($spp_id=='all') {
+			// output everything
+		} else if($spp_id>0) {
 			// give full details for one perk
 			$this->db->where('spp_id', $spp_id);
 		} else {
-			// only give id, timestamp, title, business, lat, and long
+			// only give id, title, business, lat, and long
 			$this->db->select('spp_id, spp_title, spp_org, spp_lat, spp_lon');
 		}
 		$perks = array(
 			#'info' => 'ESRI requires attribution if you are using coordinates. Geocoder metadata is available at http://www.arcgis.com/home/item.html?id=919dd045918c42458f30d2c85d566d68.',
 			'perks' => $this->db->get('septa_pass_perks')->result()
 		);
-		header('Content-type: application/json');
-		echo json_encode($perks);
+		
+		$format = isset($_GET['format'])?$_GET['format']:'json';
+		switch($format)
+		{
+			case 'kml':
+				header('Content-type: application/vnd.google-earth.kml+xml');
+				echo '<?xml version="1.0" encoding="UTF-8"?>
+                <kml xmlns="http://www.opengis.net/kml/2.2"><Document>';
+				foreach($perks['perks'] as $p)
+				{
+					echo '<Placemark>
+						<name><![CDATA['.$p->spp_org.']]></name>
+						<description><![CDATA[
+							'.$p->spp_title.'
+						]]></description>
+						<Point>
+						  <coordinates>'.$p->spp_lon.','.$p->spp_lat.',0</coordinates>
+						</Point>
+					  </Placemark>
+					  ';
+				}
+				echo '</Document></kml>';
+				break;
+				
+			default:
+				header('Content-type: application/json');
+				echo json_encode($perks);
+		}
+
 	}
 	
 	/* Get latest detours for a given route */
 	public function route($route_short_name, $type='detours')
 	{	
 		$this->load->database();
-		$format = 'table';
-		if(isset($_GET['format'])) $format=$_GET['format'];
+		$format = isset($_GET['format'])?$_GET['format']:'table';
 		
 		switch($type)
 		{
